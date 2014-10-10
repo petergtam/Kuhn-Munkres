@@ -73,7 +73,6 @@ public class KuhnMunkres
 					double alpha = calculateAlpha(G, S, T, lx, ly);
 					actualizarL(G, S, T, lx, ly, alpha);
 					Gl = obtenerGl(G, lx, ly);
-					i = 0;
 				}
 
 				ngl.removeAll(T);
@@ -151,21 +150,15 @@ public class KuhnMunkres
 		return null;
 	}
 
-	private Matrix obtenerGl(Matrix g2, List lx, List ly)
+	private Matrix obtenerGl(Matrix g2, List<Vertice> lx, List<Vertice> ly)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private void etiquetadoFactible(Matrix g2, List lx, List ly)
+	private void etiquetadoFactible(Matrix g2, List<Vertice> lx, List<Vertice> ly)
 	{
 		// TODO Auto-generated method stub
 
-	}
-
-	static int a, b, c, d, e, f, g, h, i, j, k, l;
-
-	public static void main(String[] args)
-	{
 	}
 }
