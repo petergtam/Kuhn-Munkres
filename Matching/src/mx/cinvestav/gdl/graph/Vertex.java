@@ -2,16 +2,16 @@ package mx.cinvestav.gdl.graph;
 
 public class Vertex
 {
-	private int x;
+	private int v;
 
 	public Vertex(int number)
 	{
-		this.x = number;
+		this.v = number;
 	}
 
-	public int getX()
+	public int getV()
 	{
-		return x;
+		return v;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class Vertex
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + x;
+		result = prime * result + v;
 		return result;
 	}
 
@@ -30,13 +30,13 @@ public class Vertex
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Vertex other = (Vertex) obj;
-		if (x != other.x) return false;
+		if (v != other.v) return false;
 		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		return Integer.toString(x);
+		return Integer.toString(v);
 	}
 }

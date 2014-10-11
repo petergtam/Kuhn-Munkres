@@ -19,8 +19,6 @@ public class Matrix
 	public Matrix(int[][] matrix)
 	{
 		this.weights = matrix;
-		x_labels = new ArrayList<Vertex>();
-		y_labels = new ArrayList<Vertex>();
 	}
 
 	@Override
@@ -45,10 +43,10 @@ public class Matrix
 		return out + "\n";
 	}
 
-	public void feasibleLabelling()
+	public void generateFeasibleLabelling()
 	{
-		x_labels.clear();
-		y_labels.clear();
+		x_labels = new ArrayList<Vertex>();
+		y_labels = new ArrayList<Vertex>();
 
 		// Ly siempre es un vector de 0
 		for (int i = 0; i < weights.length; i++)
@@ -63,18 +61,21 @@ public class Matrix
 		}
 	}
 
-	public Matrix getGL()
+	public Matrix produceGL()
 	{
-		Matrix Gl = this.clone();
-		int[][] w = Gl.weights;
-		for (int i = 0; i < w.length; i++)
+		Matrix equalitySubgraph = this.clone();
+		int[][] weights = equalitySubgraph.weights;
+		for (int i = 0; i < weights.length; i++)
 		{
-			for (int j = 0; j < w[i].length; j++)
+			for (int j = 0; j < weights[i].length; j++)
 			{
-				if (w[i][j] < x_labels.get(i).getX()) w[i][j] = 0;
+				if (weights[i][j] != x_labels.get(i).getV() + y_labels.get(j).getV())
+				{
+					weights[i][j] = 0;
+				}
 			}
 		}
-		return Gl;
+		return equalitySubgraph;
 	}
 
 	public Matching getMatching()
