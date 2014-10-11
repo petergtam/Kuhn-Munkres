@@ -50,7 +50,7 @@ public class KuhnMunkres
 					System.out.println("Y ES VACIO!!!!");
 					System.exit(1);
 				}
-				Vertex z = matching.isYSaturated(y);
+				Vertex z = matching.isYSaturated(y,S);
 				// parte 2
 
 				flag = (z == null) ? false : true;
@@ -73,7 +73,7 @@ public class KuhnMunkres
 
 	public static void main(String[] args)
 	{
-		int[][] matriz = { { 3, 5, 5, 4, 1 }, { 2, 2, 0, 2, 2 }, { 2, 4, 4, 1, 0 }, { 0, 1, 1, 0, 0 },
+		double[][] matriz = { { 3, 5, 5, 4, 1 }, { 2, 2, 0, 2, 2 }, { 2, 4, 4, 1, 0 }, { 0, 1, 1, 0, 0 },
 				{ 1, 2, 1, 3, 3 } };
 
 		Matrix G = new Matrix(matriz);

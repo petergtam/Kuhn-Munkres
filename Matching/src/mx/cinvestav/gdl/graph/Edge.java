@@ -21,6 +21,14 @@ public class Edge
 	{
 		this.matching = matching;
 	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public int getY() {
+		return y;
+	}
 
 	@Override
 	public String toString()

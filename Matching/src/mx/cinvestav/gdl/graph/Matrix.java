@@ -2,31 +2,32 @@ package mx.cinvestav.gdl.graph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Matrix
 {
-	private int weights[][];
-	private List<Vertex> x_labels;
-	private List<Vertex> y_labels;
+	private double weights[][];
+	private List<Double> x_labels;
+	private List<Double> y_labels;
 
 	public int getSizeX()
 	{
 		return weights.length;
 	}
 
-	public Matrix(int[][] matrix)
+	public Matrix(double[][] matrix)
 	{
 		this.weights = matrix;
-		x_labels = new ArrayList<Vertex>();
-		y_labels = new ArrayList<Vertex>();
+		x_labels = new ArrayList<Double>();
+		y_labels = new ArrayList<Double>();
 	}
 
 	@Override
 	public Matrix clone()
 	{
-		int[][] clone = new int[weights.length][];
+		double[][] clone = new double[weights.length][];
 		for (int i = 0; i < weights.length; i++)
 		{
 			clone[i] = weights[i].clone();
@@ -53,25 +54,25 @@ public class Matrix
 		// Ly siempre es un vector de 0
 		for (int i = 0; i < weights.length; i++)
 		{
-			int max = weights[i][0];
+			double max = weights[i][0];
 			for (int j = 1; j < weights[i].length; j++)
 			{
 				if (weights[i][j] > max) max = weights[i][j];
 			}
-			x_labels.add(new Vertex(max));
-			y_labels.add(new Vertex(0));
+			x_labels.add(max);
+			y_labels.add((double)0);
 		}
 	}
 
 	public Matrix getGL()
 	{
 		Matrix Gl = this.clone();
-		int[][] w = Gl.weights;
+		double[][] w = Gl.weights;
 		for (int i = 0; i < w.length; i++)
 		{
 			for (int j = 0; j < w[i].length; j++)
 			{
-				if (w[i][j] < x_labels.get(i).getX()) w[i][j] = 0;
+				if (w[i][j] < x_labels.get(i)) w[i][j] = 0;
 			}
 		}
 		return Gl;
@@ -81,7 +82,7 @@ public class Matrix
 	{
 		Matching matching = new Matching();
 
-		int[][] w = this.weights;
+		double[][] w = this.weights;
 		List<Integer> satX = new ArrayList<>();
 		List<Integer> satY = new ArrayList<>();
 		for (int i = 0; i < w.length; i++)
@@ -110,19 +111,54 @@ public class Matrix
 
 	public double calculateAlpha(Set<Vertex> s, Set<Vertex> t)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		double min = Double.POSITIVE_INFINITY;
+		for(Vertex x : s)
+		{
+			for(int i = 0; i<weights[x.getX()].length;i++)
+			{
+				if(!t.contains(i))
+				{
+					double sum = x_labels.get(x.getX()) + y_labels.get(i) - weights[x.getX()][i]; 
+					if(sum<min) min = sum;
+				}	
+			}
+		}
+		return min;
 	}
 
 	public void updateLabelling(Set<Vertex> s, Set<Vertex> t, double alpha)
 	{
-		// TODO Auto-generated method stub
-
+		for(int i = 0; i < weights.length;i++)
+		{			
+			if(s.contains(x_labels.get(i)))
+			{
+				double value = x_labels.get(i)-alpha;
+				x_labels.set(i,value);
+			}
+			for(int j = 0 ; j<weights[i].length;j++)
+			{
+				if(t.contains(y_labels.get(j)))
+				{
+					double value = y_labels.get(j)+alpha;
+					y_labels.set(j, value);
+				}
+			}
+		}
 	}
 
 	public Set<Vertex> getNeighbors(Set<Vertex> s)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Set<Vertex> neighbors = new HashSet<>();
+		for(Vertex v : s){
+			int counter = 0;
+			for(double vertex : weights[v.getX()])
+			{
+				if(vertex!=0)
+				{
+					neighbors.add(new Vertex(counter++));
+				}
+			}
+		}
+		return neighbors;
 	}
 }

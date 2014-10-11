@@ -2,6 +2,7 @@ package mx.cinvestav.gdl.graph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Matching
 {
@@ -53,10 +54,21 @@ public class Matching
 		return u;
 	}
 
-	public Vertex isYSaturated(Vertex y)
+	public Vertex isYSaturated(Vertex y, Set<Vertex> s)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Vertex z = null;
+		for(Edge e:edgeList)
+		{
+			if(e.isMatching() && (y.getX()==e.getY()))
+			{
+				Vertex v = new Vertex(e.getX());
+				if(!s.contains(v))
+				{
+					z = v;
+				}
+			}
+		}
+		return z;
 	}
 
 	public Matching getAugmentingPath(Vertex u, Vertex y)
