@@ -65,6 +65,7 @@ public class Matching
 				if(!s.contains(v))
 				{
 					z = v;
+					break;
 				}
 			}
 		}
