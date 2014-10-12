@@ -9,8 +9,8 @@ public class KuhnMunkres
 	public void resolve(Matrix graph)
 	{
 		// parte 1
-		graph.feasibleLabelling();
-		Matrix equalitySubgraph_GL = graph.getGL();
+		graph.generateFeasibleLabelling();
+		Matrix equalitySubgraph_GL = graph.produceGL();
 		Matching matching = equalitySubgraph_GL.getMatching();
 		
 		// Unsaturated vertex of X
@@ -36,7 +36,7 @@ public class KuhnMunkres
 				{
 					double alpha = graph.calculateAlpha(S, T);
 					graph.updateLabelling(S, T, alpha);
-					equalitySubgraph_GL = graph.getGL();
+					equalitySubgraph_GL = graph.produceGL();
 				}
 				ngl.removeAll(T);
 				Iterator<Vertex> i = ngl.iterator();

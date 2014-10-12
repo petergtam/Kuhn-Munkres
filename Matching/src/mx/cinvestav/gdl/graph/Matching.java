@@ -59,7 +59,7 @@ public class Matching
 		Vertex z = null;
 		for(Edge e:edgeList)
 		{
-			if(e.isMatching() && (y.getX()==e.getY()))
+			if(e.isMatching() && (y.getV()==e.getY()))
 			{
 				Vertex v = new Vertex(e.getX());
 				if(!s.contains(v))

@@ -20,8 +20,6 @@ public class Matrix
 	public Matrix(double[][] matrix)
 	{
 		this.weights = matrix;
-		x_labels = new ArrayList<Double>();
-		y_labels = new ArrayList<Double>();
 	}
 
 	@Override
@@ -46,10 +44,10 @@ public class Matrix
 		return out + "\n";
 	}
 
-	public void feasibleLabelling()
+	public void generateFeasibleLabelling()
 	{
-		x_labels.clear();
-		y_labels.clear();
+		x_labels = new ArrayList<Double>();
+		y_labels = new ArrayList<Double>();
 
 		// Ly siempre es un vector de 0
 		for (int i = 0; i < weights.length; i++)
@@ -64,18 +62,21 @@ public class Matrix
 		}
 	}
 
-	public Matrix getGL()
+	public Matrix produceGL()
 	{
-		Matrix Gl = this.clone();
-		double[][] w = Gl.weights;
-		for (int i = 0; i < w.length; i++)
+		Matrix equalitySubgraph = this.clone();
+		double[][] weights = equalitySubgraph.weights;
+		for (int i = 0; i < weights.length; i++)
 		{
-			for (int j = 0; j < w[i].length; j++)
+			for (int j = 0; j < weights[i].length; j++)
 			{
-				if (w[i][j] < x_labels.get(i)) w[i][j] = 0;
+				if (weights[i][j] != x_labels.get(i) + y_labels.get(j))
+				{
+					weights[i][j] = 0;
+				}
 			}
 		}
-		return Gl;
+		return equalitySubgraph;
 	}
 
 	public Matching getMatching()
@@ -114,11 +115,11 @@ public class Matrix
 		double min = Double.POSITIVE_INFINITY;
 		for(Vertex x : s)
 		{
-			for(int i = 0; i<weights[x.getX()].length;i++)
+			for(int i = 0; i<weights[x.getV()].length;i++)
 			{
 				if(!t.contains(i))
 				{
-					double sum = x_labels.get(x.getX()) + y_labels.get(i) - weights[x.getX()][i]; 
+					double sum = x_labels.get(x.getV()) + y_labels.get(i) - weights[x.getV()][i]; 
 					if(sum<min) min = sum;
 				}	
 			}
@@ -148,10 +149,10 @@ public class Matrix
 
 	public Set<Vertex> getNeighbors(Set<Vertex> s)
 	{
-		Set<Vertex> neighbors = new HashSet<>();
+		Set<Vertex> neighbors = new HashSet<Vertex>();
 		for(Vertex v : s){
 			int counter = 0;
-			for(double vertex : weights[v.getX()])
+			for(double vertex : weights[v.getV()])
 			{
 				if(vertex!=0)
 				{
