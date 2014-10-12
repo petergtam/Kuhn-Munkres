@@ -1,75 +1,64 @@
 package mx.cinvestav.gdl.graph;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class KuhnMunkres
 {
 	public void resolve(Matrix graph)
 	{
-		// parte 1
 		graph.generateFeasibleLabelling();
 		Matrix equalitySubgraph_GL = graph.produceGL();
-		Matching matching = equalitySubgraph_GL.getMatching();
-		
-		// Unsaturated vertex of X
-		Vertex u = null;
-		
-		// Unsaturated vertex of Y
-		Vertex y = null;
+		Matching matching = equalitySubgraph_GL.getArbitraryMatching();
 
-		while ((u = matching.isXSaturated(equalitySubgraph_GL)) != null)
+		Vertex u = null; // Unsaturated vertex of X
+		Vertex y = null; // Unsaturated vertex of Y
+
+		// while there is not yet a perfect matching
+		while ((u = matching.isXSaturated()) != null)
 		{
-			// parte 1
-
-			Set<Vertex> S = new HashSet<Vertex>();
+			Set<Vertex> S = new HashSet<Vertex>(); // collection of Xs
 			S.add(u);
-			Set<Vertex> T = new HashSet<Vertex>();
-			boolean flag;
+
+			Set<Vertex> T = new HashSet<Vertex>(); // collection of Ys
+			boolean isYsaturated;
 			do
 			{
-
-				// parte 2
-				Set<Vertex> ngl = equalitySubgraph_GL.getNeighbors(S);
-				if (ngl.equals(T))
+				Set<Vertex> neighborsS_GL = equalitySubgraph_GL.getNeighbors(S);
+				if (neighborsS_GL.equals(T))
 				{
 					double alpha = graph.calculateAlpha(S, T);
 					graph.updateLabelling(S, T, alpha);
 					equalitySubgraph_GL = graph.produceGL();
-				}
-				ngl.removeAll(T);
-				Iterator<Vertex> i = ngl.iterator();
-				y = null;
-				if (i.hasNext())
-				{
-					y = i.next();
-				}
-				if (y == null)
-				{
-					System.out.println("Y ES VACIO!!!!");
-					System.exit(1);
-				}
-				Vertex z = matching.isYSaturated(y,S);
-				// parte 2
 
-				flag = (z == null) ? false : true;
-				if (flag)
+					// recalculate neighbors
+					neighborsS_GL = equalitySubgraph_GL.getNeighbors(S);
+				}
+				neighborsS_GL.removeAll(T);
+
+				// y is guaranteed to have value
+				y = neighborsS_GL.iterator().next();
+
+				Vertex z = matching.isYSaturated(y);
+				isYsaturated = (z == null) ? false : true;
+				if (isYsaturated)
 				{
 					S.add(z);
 					T.add(y);
 				}
-			} while (flag);
+			} while (isYsaturated);
 
-			// parte 3
-			Matching path = matching.getAugmentingPath(u, y);
-			matching = matching.xor(path);
-			// parte3
+			// matching edges might have changed
+			equalitySubgraph_GL.updateMatching(matching);
+
+			// calculate augmenting path from u to y
+			Matching path = matching.getAugmentingPath(equalitySubgraph_GL, u, y);
+
+			// Invert matching on the path edges
+			matching.xor(path);
 		}
 		System.out.println(matching);
 	}
-
-	
 
 	public static void main(String[] args)
 	{

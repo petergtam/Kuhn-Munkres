@@ -2,13 +2,13 @@ package mx.cinvestav.gdl.graph;
 
 public class Edge
 {
-	private int x, y;
+	private Vertex x, y;
 	private boolean matching = false;
 
 	public Edge(int i, int j)
 	{
-		this.x = i;
-		this.y = j;
+		this.x = new Vertex(i, 'x');
+		this.y = new Vertex(j, 'y');
 		matching = false;
 	}
 
@@ -21,19 +21,51 @@ public class Edge
 	{
 		this.matching = matching;
 	}
-	
-	public int getX() {
+
+	public Vertex getX()
+	{
 		return x;
 	}
-	
-	public int getY() {
+
+	public Vertex getY()
+	{
 		return y;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Edge other = (Edge) obj;
+		if (x == null)
+		{
+			if (other.x != null) return false;
+		}
+		else if (!x.equals(other.x)) return false;
+		if (y == null)
+		{
+			if (other.y != null) return false;
+		}
+		else if (!y.equals(other.y)) return false;
+		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		if (matching) return "X" + x + "Y" + y;
-		return "x" + x + "y" + y;
+		if (matching) return x.toString().toUpperCase() + y.toString().toUpperCase();
+		return x.toString() + y.toString();
 	}
 }

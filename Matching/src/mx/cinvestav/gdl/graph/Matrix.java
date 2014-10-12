@@ -58,7 +58,7 @@ public class Matrix
 				if (weights[i][j] > max) max = weights[i][j];
 			}
 			x_labels.add(max);
-			y_labels.add((double)0);
+			y_labels.add(0d);
 		}
 	}
 
@@ -79,12 +79,11 @@ public class Matrix
 		return equalitySubgraph;
 	}
 
-	public Matching getMatching()
+	public Matching getArbitraryMatching()
 	{
 		Matching matching = new Matching();
 
 		double[][] w = this.weights;
-		List<Integer> satX = new ArrayList<>();
 		List<Integer> satY = new ArrayList<>();
 		for (int i = 0; i < w.length; i++)
 		{
@@ -97,7 +96,6 @@ public class Matrix
 					if (flag && !satY.contains(j))
 					{
 						e.setMatching(true);
-						satX.add(i);
 						satY.add(j);
 						flag = false;
 					}
@@ -105,59 +103,74 @@ public class Matrix
 				}
 			}
 		}
-		matching.setSaturatedX(satX);
-		matching.setSaturatedY(satY);
 		return matching;
+	}
+
+	public void updateMatching(Matching matching)
+	{
+		double[][] w = this.weights;
+		List<Edge> edges = new ArrayList<Edge>();
+		for (int i = 0; i < w.length; i++)
+		{
+			for (int j = 0; j < w[i].length; j++)
+			{
+				if (w[i][j] != 0)
+				{
+					Edge e = new Edge(i, j);
+					edges.add(e);
+				}
+			}
+		}
+		for (Edge e : matching.getEdgeList())
+		{
+			if (e.isMatching())
+			{
+				int indexOf = edges.indexOf(e);
+				edges.get(indexOf).setMatching(true);
+			}
+		}
+		matching.setEdgeList(edges);
 	}
 
 	public double calculateAlpha(Set<Vertex> s, Set<Vertex> t)
 	{
-		double min = Double.POSITIVE_INFINITY;
-		for(Vertex x : s)
+		double alpha = Double.POSITIVE_INFINITY;
+		for (Vertex x : s)
 		{
-			for(int i = 0; i<weights[x.getV()].length;i++)
+			for (int i = 0; i < weights[x.getValue()].length; i++)
 			{
-				if(!t.contains(i))
+				if (!t.contains(new Vertex(i, 'y')))
 				{
-					double sum = x_labels.get(x.getV()) + y_labels.get(i) - weights[x.getV()][i]; 
-					if(sum<min) min = sum;
-				}	
+					double sum = x_labels.get(x.getValue()) + y_labels.get(i) - weights[x.getValue()][i];
+					if (sum < alpha) alpha = sum;
+				}
 			}
 		}
-		return min;
+		return alpha;
 	}
 
 	public void updateLabelling(Set<Vertex> s, Set<Vertex> t, double alpha)
 	{
-		for(int i = 0; i < weights.length;i++)
-		{			
-			if(s.contains(x_labels.get(i)))
-			{
-				double value = x_labels.get(i)-alpha;
-				x_labels.set(i,value);
-			}
-			for(int j = 0 ; j<weights[i].length;j++)
-			{
-				if(t.contains(y_labels.get(j)))
-				{
-					double value = y_labels.get(j)+alpha;
-					y_labels.set(j, value);
-				}
-			}
+		for (Vertex x : s)
+		{
+			int index = x.getValue();
+			x_labels.set(index, x_labels.get(index) - alpha);
+		}
+		for (Vertex y : t)
+		{
+			int index = y.getValue();
+			y_labels.set(index, y_labels.get(index) + alpha);
 		}
 	}
 
-	public Set<Vertex> getNeighbors(Set<Vertex> s)
+	public Set<Vertex> getNeighbors(Set<Vertex> S)
 	{
 		Set<Vertex> neighbors = new HashSet<Vertex>();
-		for(Vertex v : s){
-			int counter = 0;
-			for(double vertex : weights[v.getV()])
+		for (Vertex x : S)
+		{
+			for (int i = 0; i < weights[x.getValue()].length; i++)
 			{
-				if(vertex!=0)
-				{
-					neighbors.add(new Vertex(counter++));
-				}
+				if (weights[x.getValue()][i] != 0) neighbors.add(new Vertex(i, 'y'));
 			}
 		}
 		return neighbors;

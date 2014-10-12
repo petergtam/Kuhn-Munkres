@@ -2,16 +2,34 @@ package mx.cinvestav.gdl.graph;
 
 public class Vertex
 {
-	private int v;
+	private int value;
+	private char type;
+	private Vertex parent = null;
 
-	public Vertex(int number)
+	public Vertex(int number, char type)
 	{
-		this.v = number;
+		this.value = number;
+		this.type = type;
 	}
 
-	public int getV()
+	public char getType()
 	{
-		return v;
+		return type;
+	}
+
+	public int getValue()
+	{
+		return value;
+	}
+
+	public Vertex getParent()
+	{
+		return parent;
+	}
+
+	public void setParent(Vertex parent)
+	{
+		this.parent = parent;
 	}
 
 	@Override
@@ -19,7 +37,8 @@ public class Vertex
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + v;
+		result = prime * result + type;
+		result = prime * result + value;
 		return result;
 	}
 
@@ -30,13 +49,14 @@ public class Vertex
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Vertex other = (Vertex) obj;
-		if (v != other.v) return false;
+		if (type != other.type) return false;
+		if (value != other.value) return false;
 		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		return Integer.toString(v);
+		return type + Integer.toString(value);
 	}
 }

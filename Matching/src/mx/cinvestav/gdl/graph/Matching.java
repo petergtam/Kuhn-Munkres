@@ -1,32 +1,34 @@
 package mx.cinvestav.gdl.graph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 public class Matching
 {
 	private List<Edge> edgeList;
-	private List<Integer> saturatedX, saturatedY;
 
 	public Matching()
 	{
 		edgeList = new ArrayList<Edge>();
 	}
 
-	public void setSaturatedX(List<Integer> saturatedX)
-	{
-		this.saturatedX = saturatedX;
-	}
-
-	public void setSaturatedY(List<Integer> saturatedY)
-	{
-		this.saturatedY = saturatedY;
-	}
-
 	public boolean addEdge(Edge e)
 	{
 		return edgeList.add(e);
+	}
+
+	public List<Edge> getEdgeList()
+	{
+		return edgeList;
+	}
+
+	public void setEdgeList(List<Edge> edgeList)
+	{
+		this.edgeList = edgeList;
 	}
 
 	@Override
@@ -40,47 +42,107 @@ public class Matching
 		return out;
 	}
 
-	public Vertex isXSaturated(Matrix gl)
+	public Vertex isXSaturated()
 	{
-		Vertex u = null;
-		for (int i = 0; i < gl.getSizeX(); i++)
+		Set<Vertex> xsat = new HashSet<Vertex>();
+		for (Edge e : edgeList)
 		{
-			if (!saturatedX.contains(i))
-			{
-				u = new Vertex(i);
-				break;
-			}
+			if (e.isMatching()) xsat.add(e.getX());
 		}
-		return u;
+		for (Edge e : edgeList)
+		{
+			if (!e.isMatching() && !xsat.contains(e.getX())) return e.getX();
+		}
+		return null;
 	}
 
-	public Vertex isYSaturated(Vertex y, Set<Vertex> s)
+	public Vertex isYSaturated(Vertex y)
 	{
-		Vertex z = null;
-		for(Edge e:edgeList)
+		for (Edge e : edgeList)
 		{
-			if(e.isMatching() && (y.getV()==e.getY()))
+			if (y.equals(e.getY()) && e.isMatching()) return e.getX();
+		}
+		return null;
+	}
+
+	public Matching getAugmentingPath(Matrix equalitySubgraph_GL, Vertex start_x, Vertex end_y)
+	{
+		Queue<Vertex> open = new LinkedList<Vertex>();
+		List<Vertex> closed = new ArrayList<Vertex>();
+		open.add(start_x);
+
+		Vertex end = null;
+		tree: while (!open.isEmpty())
+		{
+			Vertex v = open.poll();
+			closed.add(v);
+			List<Vertex> children = getChildren(equalitySubgraph_GL, v);
+			for (Vertex c : children)
 			{
-				Vertex v = new Vertex(e.getX());
-				if(!s.contains(v))
+				if (!closed.contains(c) && !open.contains(c))
 				{
-					z = v;
+					c.setParent(v);
+					if (c.equals(end_y))
+					{
+						end = c;
+						break tree;
+					}
+					open.add(c);
+				}
+			}
+		}
+		Vertex i = end;
+
+		List<Edge> path = new ArrayList<Edge>();
+		while (i != null && i.getParent() != null)
+		{
+			if (i.getType() == 'y') path.add(new Edge(i.getParent().getValue(), i.getValue()));
+			else path.add(new Edge(i.getValue(), i.getParent().getValue()));
+			i = i.getParent();
+		}
+		for (Edge e : this.edgeList)
+		{
+			if (e.isMatching())
+			{
+				int indexOf = path.indexOf(e);
+				if (indexOf != -1) path.get(indexOf).setMatching(true);
+			}
+		}
+
+		Matching p = new Matching();
+		p.edgeList = path;
+		return p;
+	}
+
+	private List<Vertex> getChildren(Matrix equalitySubgraph_GL, Vertex v)
+	{
+		List<Vertex> children = new ArrayList<Vertex>();
+		if (v.getType() == 'x')
+		{
+			for (Edge e : edgeList)
+			{
+				if (v.equals(e.getX()) && !e.isMatching()) children.add(e.getY());
+			}
+		}
+		else
+		{
+			for (Edge e : edgeList)
+			{
+				if (v.equals(e.getY()) && e.isMatching())
+				{
+					children.add(e.getX());
 					break;
 				}
 			}
 		}
-		return z;
+		return children;
 	}
 
-	public Matching getAugmentingPath(Vertex u, Vertex y)
+	public void xor(Matching path)
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Matching xor(Matching path)
-	{
-		// TODO Auto-generated method stub
-		return null;
+		for (Edge e : edgeList)
+		{
+			if (path.edgeList.contains(e)) e.setMatching(!e.isMatching());
+		}
 	}
 }
