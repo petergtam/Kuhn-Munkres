@@ -11,15 +11,22 @@ public class Matrix
 	private double weights[][];
 	private List<Double> x_labels;
 	private List<Double> y_labels;
+	private boolean descending;
 
 	public int getSizeX()
 	{
 		return weights.length;
 	}
 
+	public void setDescending(boolean descending)
+	{
+		this.descending = descending;
+	}
+
 	public Matrix(double[][] matrix)
 	{
 		this.weights = matrix;
+		this.descending = false;
 	}
 
 	@Override
@@ -55,7 +62,8 @@ public class Matrix
 			double max = weights[i][0];
 			for (int j = 1; j < weights[i].length; j++)
 			{
-				if (weights[i][j] > max) max = weights[i][j];
+				if (descending && weights[i][j] < max) max = weights[i][j];
+				else if (!descending && weights[i][j] > max) max = weights[i][j];
 			}
 			x_labels.add(max);
 			y_labels.add(0d);
@@ -134,7 +142,9 @@ public class Matrix
 
 	public double calculateAlpha(Set<Vertex> s, Set<Vertex> t)
 	{
-		double alpha = Double.POSITIVE_INFINITY;
+		double alpha;
+		if (descending) alpha = Double.NEGATIVE_INFINITY;
+		else alpha = Double.POSITIVE_INFINITY;
 		for (Vertex x : s)
 		{
 			for (int i = 0; i < weights[x.getValue()].length; i++)
@@ -142,7 +152,8 @@ public class Matrix
 				if (!t.contains(new Vertex(i, 'y')))
 				{
 					double sum = x_labels.get(x.getValue()) + y_labels.get(i) - weights[x.getValue()][i];
-					if (sum < alpha) alpha = sum;
+					if (descending && sum > alpha) alpha = sum;
+					else if (!descending && sum < alpha) alpha = sum;
 				}
 			}
 		}

@@ -42,16 +42,17 @@ public class Matching
 		return out;
 	}
 
-	public Vertex isXSaturated()
+	public Vertex isXSaturated(Matrix g)
 	{
 		Set<Vertex> xsat = new HashSet<Vertex>();
 		for (Edge e : edgeList)
 		{
 			if (e.isMatching()) xsat.add(e.getX());
 		}
-		for (Edge e : edgeList)
+		for (int i = 0; i < g.getSizeX(); i++)
 		{
-			if (!e.isMatching() && !xsat.contains(e.getX())) return e.getX();
+			Vertex x = new Vertex(i, 'x');
+			if (!xsat.contains(x)) return x;
 		}
 		return null;
 	}

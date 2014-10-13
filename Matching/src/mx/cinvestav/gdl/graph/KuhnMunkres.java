@@ -15,7 +15,7 @@ public class KuhnMunkres
 		Vertex y = null; // Unsaturated vertex of Y
 
 		// while there is not yet a perfect matching
-		while ((u = matching.isXSaturated()) != null)
+		while ((u = matching.isXSaturated(graph)) != null)
 		{
 			Set<Vertex> S = new HashSet<Vertex>(); // collection of Xs
 			S.add(u);
@@ -62,10 +62,15 @@ public class KuhnMunkres
 
 	public static void main(String[] args)
 	{
-		double[][] matriz = { { 3, 5, 5, 4, 1 }, { 2, 2, 0, 2, 2 }, { 2, 4, 4, 1, 0 }, { 0, 1, 1, 0, 0 },
-				{ 1, 2, 1, 3, 3 } };
+		// double[][] matriz = { { 3, 5, 5, 4, 1 }, { 2, 2, 0, 2, 2 }, { 2, 4,
+		// 4, 1, 0 }, { 0, 1, 1, 0, 0 },
+		// { 1, 2, 1, 3, 3 } };
+
+		double[][] matriz = { { 4, 5, 8, 10, 11 }, { 7, 6, 5, 7, 4 }, { 8, 5, 12, 9, 6 }, { 6, 6, 13, 10, 7 },
+				{ 4, 5, 7, 9, 8 } };
 
 		Matrix G = new Matrix(matriz);
+		G.setDescending(false);
 
 		KuhnMunkres km = new KuhnMunkres();
 
