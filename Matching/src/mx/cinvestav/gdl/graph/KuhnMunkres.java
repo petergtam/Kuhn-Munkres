@@ -58,7 +58,6 @@ public class KuhnMunkres
 			matching.xor(path);
 		}
 		System.out.println(matching);
-		System.out.println("weight: " + matching.weight(graph));
 	}
 
 	public static void main(String[] args)
