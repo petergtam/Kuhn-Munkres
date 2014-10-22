@@ -51,6 +51,11 @@ public class Matrix
 		return out + "\n";
 	}
 
+	public double getWeight(int x, int y)
+	{
+		return weights[x][y];
+	}
+
 	public void generateFeasibleLabelling()
 	{
 		x_labels = new ArrayList<Double>();
@@ -80,7 +85,7 @@ public class Matrix
 			{
 				if (weights[i][j] != x_labels.get(i) + y_labels.get(j))
 				{
-					weights[i][j] = 0;
+					weights[i][j] = Double.NaN;
 				}
 			}
 		}
@@ -98,7 +103,7 @@ public class Matrix
 			boolean flag = true;
 			for (int j = 0; j < w[i].length; j++)
 			{
-				if (w[i][j] != 0)
+				if (!Double.isNaN(w[i][j]))
 				{
 					Edge e = new Edge(i, j);
 					if (flag && !satY.contains(j))
@@ -122,7 +127,7 @@ public class Matrix
 		{
 			for (int j = 0; j < w[i].length; j++)
 			{
-				if (w[i][j] != 0)
+				if (!Double.isNaN(w[i][j]))
 				{
 					Edge e = new Edge(i, j);
 					edges.add(e);
@@ -181,7 +186,7 @@ public class Matrix
 		{
 			for (int i = 0; i < weights[x.getValue()].length; i++)
 			{
-				if (weights[x.getValue()][i] != 0) neighbors.add(new Vertex(i, 'y'));
+				if (!Double.isNaN(weights[x.getValue()][i])) neighbors.add(new Vertex(i, 'y'));
 			}
 		}
 		return neighbors;

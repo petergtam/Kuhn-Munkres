@@ -42,6 +42,16 @@ public class Matching
 		return out;
 	}
 
+	public double weight(Matrix g)
+	{
+		double w = 0;
+		for (Edge e : edgeList)
+		{
+			if (e.isMatching()) w += g.getWeight(e.getX().getValue(), e.getY().getValue());
+		}
+		return w;
+	}
+
 	public Vertex isXSaturated(Matrix g)
 	{
 		Set<Vertex> xsat = new HashSet<Vertex>();
